@@ -2,7 +2,7 @@ package app;
 
 import java.util.List;
 
-import source.GeradorDeProblemas;
+import generators.GeradorDeProblemas;
 
 public class Main {
 	public static void main(String[] args) {
