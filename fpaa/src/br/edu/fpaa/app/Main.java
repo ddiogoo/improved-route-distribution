@@ -13,58 +13,33 @@ public class Main {
 	}
 	
 	public static void executarGuloso() {
-		long tempoInicialDoPrimeiroGuloso = 0, tempoFinalDoPrimeiroGuloso = 0, tempoTotalDoPrimeiroGuloso = 0;
-		long tempoInicialDoSegundoGuloso = 0, tempoFinalDoSegundoGuloso = 0, tempoTotalDoSegundoGuloso = 0;
-		double tempoMedioPrimeiroGuloso, tempoMedioSegundoGuloso;
+		long tempoTotal = 0;
+		boolean lock = true;
 		
-		int quantidadeDeExecuções = 10;
-		for(int execucao = 1; execucao <= quantidadeDeExecuções; execucao++) {
-			System.out.println(execucao + "º execução ===============================");
-			List<int[]> sets = GeradorDeProblemas.geracaoDeRotas(10, 6, 1);
-			int tamanho = sets.size() * sets.get(0).length;
+		long tempoExecucao = 30000;
+		while(lock) {
+			List<int[]> conjuntos = GeradorDeProblemas.geracaoDeRotas(10, 6, 1);
+			int tamanho = conjuntos.size() * conjuntos.get(0).length;
 			int[] todasAsRotas = new int[tamanho];
 			
-			int i = 0;
-			for(int[] rotas : sets) {
+			int indice = 0;
+			for(int[] rotas : conjuntos) {
 				for(int rota : rotas) {
-					todasAsRotas[i++] = rota;
+					todasAsRotas[indice++] = rota;
 				}
 			}
 			
-			tempoInicialDoPrimeiroGuloso = System.currentTimeMillis();
-			guloso1(todasAsRotas);
-			tempoFinalDoPrimeiroGuloso = System.currentTimeMillis();
-			System.out.println();
-			tempoTotalDoPrimeiroGuloso += (tempoFinalDoPrimeiroGuloso - tempoInicialDoPrimeiroGuloso);
+			if(tempoTotal > tempoExecucao)
+				break;
+			
+			AlgoritmoGuloso algoritmoGuloso = new AlgoritmoGuloso(todasAsRotas, 3);
+			long tempoInicial = System.currentTimeMillis();
+			algoritmoGuloso.distribuirRotasOrdenando();
+			long tempoFinal = System.currentTimeMillis(); 
+			tempoTotal += (tempoFinal - tempoInicial);
 		}
 		
-		tempoMedioPrimeiroGuloso = (double)(tempoTotalDoPrimeiroGuloso / quantidadeDeExecuções);
-		System.out.println("Tempo total: " + tempoTotalDoPrimeiroGuloso + " ms.");
-		System.out.println("Tempo médio: " + tempoMedioPrimeiroGuloso + " ms.");
-		
-		for(int execucao = 1; execucao <= quantidadeDeExecuções; execucao++) {
-			System.out.println(execucao + "º execução ===============================");
-			List<int[]> sets = GeradorDeProblemas.geracaoDeRotas(10, 6, 1);
-			int tamanho = sets.size() * sets.get(0).length;
-			int[] todasAsRotas = new int[tamanho];
-			
-			int i = 0;
-			for(int[] rotas : sets) {
-				for(int rota : rotas) {
-					todasAsRotas[i++] = rota;
-				}
-			}
-			
-			tempoInicialDoSegundoGuloso = System.currentTimeMillis();
-			guloso2(todasAsRotas);
-			tempoFinalDoSegundoGuloso = System.currentTimeMillis();
-			System.out.println();
-			tempoTotalDoSegundoGuloso += (tempoFinalDoSegundoGuloso - tempoInicialDoSegundoGuloso);
-		}
-		
-		tempoMedioSegundoGuloso = (double)(tempoTotalDoSegundoGuloso / quantidadeDeExecuções);
-		System.out.println("Tempo total: " + tempoTotalDoSegundoGuloso + " ms.");
-		System.out.println("Tempo médio: " + tempoMedioSegundoGuloso + " ms.");
+		System.out.println(tempoTotal);
 	}
 	
 	public static void guloso1(int[] todasAsRotas) {
@@ -88,13 +63,14 @@ public class Main {
 	
 	public static void guloso2(int[] rotasAsRotas) {
 		AlgoritmoGuloso guloso = new AlgoritmoGuloso(rotasAsRotas, 3);
-		guloso.distribuirRotasParaCaminhaoComMenosRotas(new Comparator<Caminhao>() {
+		Comparator<Caminhao> comparador = new Comparator<Caminhao>() {
 			@Override
 			public int compare(Caminhao o1, Caminhao o2) {
 				if(o1.totalDeRotas() > o2.totalDeRotas()) return 1;
 				else return 0;
 			}
-		});
+		};
+		guloso.distribuirRotasParaCaminhaoComMenosRotas(comparador);
 		
 		int ordemCaminhao = 1;
 		List<Caminhao> caminhoes = guloso.obterCaminhoes();
