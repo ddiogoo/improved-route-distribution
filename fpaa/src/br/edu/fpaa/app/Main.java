@@ -1,7 +1,9 @@
 package br.edu.fpaa.app;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import br.edu.fpaa.caminhao.Caminhao;
 import br.edu.fpaa.guloso.AlgoritmoGuloso;
@@ -13,12 +15,15 @@ public class Main {
 	}
 	
 	public static void executarGuloso() {
+		Map<Integer, Long> hm = new HashMap<Integer, Long>();
 		long tempoTotal = 0;
 		boolean lock = true;
+		int T = 6;
+		int dezVezesT = T * 10;
 		
-		long tempoExecucao = 30000;
+		System.out.println("Rodando Algoritmo Guloso...");
 		while(lock) {
-			List<int[]> conjuntos = GeradorDeProblemas.geracaoDeRotas(10, 6, 1);
+			List<int[]> conjuntos = GeradorDeProblemas.geracaoDeRotas(10, T, 1);
 			int tamanho = conjuntos.size() * conjuntos.get(0).length;
 			int[] todasAsRotas = new int[tamanho];
 			
@@ -29,17 +34,20 @@ public class Main {
 				}
 			}
 			
-			if(tempoTotal > tempoExecucao)
-				break;
+			if(T == dezVezesT) break;
 			
 			AlgoritmoGuloso algoritmoGuloso = new AlgoritmoGuloso(todasAsRotas, 3);
 			long tempoInicial = System.currentTimeMillis();
 			algoritmoGuloso.distribuirRotasOrdenando();
 			long tempoFinal = System.currentTimeMillis(); 
 			tempoTotal += (tempoFinal - tempoInicial);
+			hm.put(T, tempoTotal);
+			T *= 2;
 		}
 		
-		System.out.println(tempoTotal);
+		hm.entrySet().stream()
+			.sorted(Map.Entry.comparingByKey())
+			.forEach(entry -> System.out.println("Quantidade de Rotas: " + entry.getKey() + ", Tempo (em ms): " + entry.getValue()));
 	}
 	
 	public static void guloso1(int[] todasAsRotas) {
