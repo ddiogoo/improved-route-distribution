@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import br.edu.fpaa.caminhao.Caminhao;
+import br.edu.fpaa.generators.GeradorDeProblemas;
 import br.edu.fpaa.guloso.AlgoritmoGuloso;
-import generators.GeradorDeProblemas;
 
 public class Main {
 	public static void main(String[] args) {

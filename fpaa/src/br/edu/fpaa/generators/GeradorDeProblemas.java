@@ -1,4 +1,4 @@
-package generators;
+package br.edu.fpaa.generators;
 
 import java.util.ArrayList;
 import java.util.List;
