@@ -1,5 +1,6 @@
 package br.edu.fpaa.app;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -15,15 +16,16 @@ public class Main {
 	}
 	
 	public static void executarGuloso() {
-		Map<Integer, Long> hm = new HashMap<Integer, Long>();
-		long tempoTotal = 0;
-		boolean lock = true;
+		Map<Integer, List<Long>> hm = new HashMap<Integer, List<Long>>();
+		long tempoTotalPorT = 0, tempoTotal = 0;
+		
 		int T = 6;
-		int dezVezesT = T * 10;
+		int	dezVezesT = 6 * 10;
+		int primeiroValorDeT = T;
 		
 		System.out.println("Rodando Algoritmo Guloso...");
-		while(lock) {
-			List<int[]> conjuntos = GeradorDeProblemas.geracaoDeRotas(10, T, 1);
+		while(true) {
+			List<int[]> conjuntos = GeradorDeProblemas.geracaoDeRotas(10, T, 0.5);
 			int tamanho = conjuntos.size() * conjuntos.get(0).length;
 			int[] todasAsRotas = new int[tamanho];
 			
@@ -34,20 +36,27 @@ public class Main {
 				}
 			}
 			
-			if(T == dezVezesT) break;
-			
+			if(T > dezVezesT) break;
 			AlgoritmoGuloso algoritmoGuloso = new AlgoritmoGuloso(todasAsRotas, 3);
-			long tempoInicial = System.currentTimeMillis();
-			algoritmoGuloso.distribuirRotasOrdenando();
-			long tempoFinal = System.currentTimeMillis(); 
-			tempoTotal += (tempoFinal - tempoInicial);
-			hm.put(T, tempoTotal);
-			T *= 2;
+			
+			List<Long> execucoes = new ArrayList<Long>();
+			for(int i = 0; i < 10; i++) {
+				long tempoInicial = System.currentTimeMillis();
+				algoritmoGuloso.distribuirRotasOrdenando();
+				long tempoFinal = System.currentTimeMillis(); 
+				tempoTotalPorT = (tempoFinal - tempoInicial);
+				tempoTotal += tempoTotalPorT;
+				execucoes.add(tempoTotalPorT);
+			}
+			hm.put(T, execucoes);
+			T += primeiroValorDeT;
 		}
 		
 		hm.entrySet().stream()
 			.sorted(Map.Entry.comparingByKey())
-			.forEach(entry -> System.out.println("Quantidade de Rotas: " + entry.getKey() + ", Tempo (em ms): " + entry.getValue()));
+			.forEach(entry -> System.out.println("Quantidade de Rotas: " + entry.getKey() + ", Tempo (em ms) por execução: " + entry.getValue()));
+		System.out.println();
+		System.out.println("Tempo Total de execução: " + tempoTotal + " ms");
 	}
 	
 	public static void guloso1(int[] todasAsRotas) {
