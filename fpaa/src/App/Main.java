@@ -1,4 +1,4 @@
-package br.edu.fpaa.app;
+package App;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -6,17 +6,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import br.edu.fpaa.caminhao.Caminhao;
-import br.edu.fpaa.generators.GeradorDeProblemas;
-import br.edu.fpaa.guloso.AlgoritmoGuloso;
+import Algoritmos.AlgoritmoGuloso;
+import Classes.Caminhao;
+import Geradores.GeradorDeProblemas;
 
 public class Main {
+	private static Map<Integer, List<Long>> hashMapPrimeiroGuloso = new HashMap<Integer, List<Long>>();
+	private static Map<Integer, List<Long>> hashMapSegundoGuloso = new HashMap<Integer, List<Long>>();
+	private static Long[] temposTotais = new Long[2];
+	
 	public static void main(String[] args) {
 		executarGuloso();
+		
+		hashMapPrimeiroGuloso.entrySet().stream()
+			.sorted(Map.Entry.comparingByKey())
+			.forEach(entry -> System.out.println("Quantidade de Rotas: " + entry.getKey() + ", Tempo (em ms) por execução: " + entry.getValue()));
+		
+		System.out.println();
+		System.out.println("Tempo Total de execução: " + temposTotais[0] + " ms");
 	}
 	
 	public static void executarGuloso() {
-		Map<Integer, List<Long>> hm = new HashMap<Integer, List<Long>>();
 		long tempoTotalPorT = 0, tempoTotal = 0;
 		
 		int T = 6;
@@ -48,15 +58,10 @@ public class Main {
 				tempoTotal += tempoTotalPorT;
 				execucoes.add(tempoTotalPorT);
 			}
-			hm.put(T, execucoes);
+			hashMapPrimeiroGuloso.put(T, execucoes);
 			T += primeiroValorDeT;
 		}
-		
-		hm.entrySet().stream()
-			.sorted(Map.Entry.comparingByKey())
-			.forEach(entry -> System.out.println("Quantidade de Rotas: " + entry.getKey() + ", Tempo (em ms) por execução: " + entry.getValue()));
-		System.out.println();
-		System.out.println("Tempo Total de execução: " + tempoTotal + " ms");
+		temposTotais[0] = tempoTotal;
 	}
 	
 	public static void guloso1(int[] todasAsRotas) {

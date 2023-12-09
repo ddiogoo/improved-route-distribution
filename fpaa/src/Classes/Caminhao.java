@@ -1,4 +1,4 @@
-package br.edu.fpaa.caminhao;
+package Classes;
 
 import java.util.ArrayList;
 import java.util.List;

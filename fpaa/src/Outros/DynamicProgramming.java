@@ -1,5 +1,5 @@
-package source;
+package Outros;
 
 public class DynamicProgramming {
-	
+
 }

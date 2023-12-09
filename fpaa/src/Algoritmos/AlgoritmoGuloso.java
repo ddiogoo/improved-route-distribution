@@ -1,11 +1,11 @@
-package br.edu.fpaa.guloso;
+package Algoritmos;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import br.edu.fpaa.caminhao.Caminhao;
+import Classes.Caminhao;
 
 public class AlgoritmoGuloso {
 	private int[] quilometragens;
