@@ -296,6 +296,7 @@ public class EntryPointAlgoritmoGuloso {
         tempoFinal = System.nanoTime();
 
         tempoTotal = (tempoFinal - tempoInicial);
+        System.out.println();
         System.err.println("Tempo da execução da segunda estratégia (caminhão com menor total de rotas): " + tempoTotal
                 + " nano segundos.");
     }
@@ -333,6 +334,7 @@ public class EntryPointAlgoritmoGuloso {
         tempoFinal = System.nanoTime();
 
         tempoTotal = (tempoFinal - tempoInicial);
+        System.out.println();
         System.err.println("Tempo da execução da segunda estratégia (caminhão com menor total de rotas): " + tempoTotal
                 + " nano segundos.");
     }
