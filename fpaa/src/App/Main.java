@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import Algoritmos.AlgoritmoGuloso;
 import Classes.Caminhao;
@@ -79,6 +80,11 @@ public class Main {
 	 * @param args Argumentos passados durante a chamda da nossa função.
 	 */
 	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		executarAlgoritmoGuloso(sc);
+	}
+
+	private static void executarAlgoritmoGuloso(Scanner sc) {
 		executarGuloso();
 
 		hashMapPrimeiroGuloso.entrySet().stream()
@@ -98,14 +104,55 @@ public class Main {
 		System.out.println("Tempo Total da segunda estratégia gulosa: " + temposTotais[1] + " ms");
 
 		System.out.println();
-		mostrarDadosDoCaminhao(4);
+
+		System.out.print("Quantos conjuntos de resultados deseja mostrar? ");
+		int quantidade = sc.nextInt();
+		limparBuffer(sc);
+
+		System.out.println(
+				"Deseja mostrar valores repetidos [S / N]? (Existem 10 valores repetidos para cada tamanho T): ");
+		String mostrarValoresRepetidos = sc.nextLine();
+		limparBuffer(sc);
+		sc.close();
+
+		boolean mostrarRepetidos = mostrarValoresRepetidos.equals("N") ? true : false;
+		if (quantidade > filaDeCaminhoes.size()) {
+			quantidade = filaDeCaminhoes.size();
+		}
+		limparTela();
+		mostrarDadosDoCaminhao(quantidade, mostrarRepetidos);
 	}
 
+	// #region Utilidades
+	/**
+	 * "Limpa" a tela (códigos de terminal VT-100).
+	 */
+	private static void limparTela() {
+		System.out.print("\033[H\033[2J");
+		System.out.flush();
+	}
+
+	/**
+	 * Limpa o buffer do teclado.
+	 * 
+	 * @param sc Scanner usado para ler valores do teclado.
+	 */
+	private static void limparBuffer(Scanner sc) {
+		while (sc.hasNextLine()) {
+			String line = sc.nextLine();
+			if (line.isEmpty()) {
+				break;
+			}
+		}
+	}
+	// #endregion
+
+	// #region Algoritmo Guloso
 	/**
 	 * Executa as duas estratégias gulosas, encapsulando seu funcionamento por meio
 	 * de dois métodos distintos.
 	 */
-	public static void executarGuloso() {
+	private static void executarGuloso() {
 		primeiraEstrategiaGulosa();
 		segundaEstrategiaGulosa();
 	}
@@ -118,7 +165,6 @@ public class Main {
 		int T = 6;
 		int dezVezesT = 6 * 10;
 		int primeiroValorDeT = T;
-
 		while (true) {
 			List<int[]> conjuntos = GeradorDeProblemas.geracaoDeRotas(10, T, 0.5);
 			int[] todasAsRotas = gerarArrayUnidimensionalDeRotas(conjuntos);
@@ -163,7 +209,6 @@ public class Main {
 		int T = 6;
 		int dezVezesT = 6 * 10;
 		int primeiroValorDeT = T;
-
 		while (true) {
 			List<int[]> conjuntos = GeradorDeProblemas.geracaoDeRotas(10, T, 0.5);
 			int[] todasAsRotas = gerarArrayUnidimensionalDeRotas(conjuntos);
@@ -177,9 +222,13 @@ public class Main {
 				tempoInicial = System.currentTimeMillis();
 				algoritmoGuloso.distribuirRotasParaCaminhaoComMenosRotas(comparador);
 				tempoFinal = System.currentTimeMillis();
+
 				tempoTotalPorT = (tempoFinal - tempoInicial);
 				tempoTotalSegundaEstrategia += tempoTotalPorT;
 				execucoesDaSegundaEstrategia.add(tempoTotalPorT);
+
+				filaDeCaminhoes.add(algoritmoGuloso.obterCaminhoes());
+				algoritmoGuloso.reiniciarDadosDosCaminhoes();
 			}
 			hashMapSegundoGuloso.put(T, execucoesDaSegundaEstrategia);
 			T += primeiroValorDeT;
@@ -188,28 +237,65 @@ public class Main {
 	}
 
 	/**
-	 * Mostrar os dados dos caminhões, a quantidade de dados retornados será
-	 * flexível para não poluir o console.
+	 * Mostrar os dados dos 3 caminhões.
+	 * 
+	 * @param quantidade          Quantidade de conjuntos de 3 caminhões que serão
+	 *                            mostrados.
+	 * @param naoMostrarRepetidos Para 1 conjunto dentro da fila de caminhões, há 10
+	 *                            resultados com o mesmo valor, pois estamos
+	 *                            executando 10 vezes com o mesmo conjunto de rotas,
+	 *                            esse parâmetro permite que você mostre somente o
+	 *                            primeiro resultado de cada conjunto para não
+	 *                            confundir.
 	 */
-	private static void mostrarDadosDoCaminhao(int quantidade) {
+	private static void mostrarDadosDoCaminhao(int quantidade, boolean naoMostrarRepetidos) {
 		int ordemCaminhao = 1;
-		for (int i = 0; i < quantidade; i++) {
-			List<Caminhao> caminhoes = filaDeCaminhoes.get(i);
-			for (Caminhao caminhao : caminhoes) {
-				if (caminhoes == null)
-					continue;
-				System.out.print("Rotas do " + ordemCaminhao + "º caminhão: ");
-
-				for (int rota : caminhao.getRotas()) {
-					System.out.print(rota + "km; ");
+		int quantidadeExecucoes = 0;
+		if (naoMostrarRepetidos) {
+			for (int i = 0; i < filaDeCaminhoes.size(); i += 10) {
+				if (quantidadeExecucoes == quantidade) {
+					break;
 				}
-				System.out.println();
+				List<Caminhao> caminhoes = filaDeCaminhoes.get(i);
+				for (Caminhao caminhao : caminhoes) {
+					if (caminhoes == null)
+						continue;
+					System.out.print("Rotas do " + ordemCaminhao + "º caminhão: ");
 
-				System.out.println("Total de rotas: " + caminhao.totalDeRotas() + " km");
-				ordemCaminhao++;
+					for (int rota : caminhao.getRotas()) {
+						System.out.print(rota + "km; ");
+					}
+					System.out.println();
+
+					System.out.println("Total de rotas: " + caminhao.totalDeRotas() + " km");
+					ordemCaminhao++;
+				}
+				ordemCaminhao = 1;
+				quantidadeExecucoes++;
+				System.out.println();
 			}
-			ordemCaminhao = 1;
-			System.out.println();
+		} else {
+			for (List<Caminhao> caminhoes : filaDeCaminhoes) {
+				for (Caminhao caminhao : caminhoes) {
+					if (caminhoes == null)
+						continue;
+					System.out.print("Rotas do " + ordemCaminhao + "º caminhão: ");
+
+					for (int rota : caminhao.getRotas()) {
+						System.out.print(rota + "km; ");
+					}
+					System.out.println();
+
+					System.out.println("Total de rotas: " + caminhao.totalDeRotas() + " km");
+					ordemCaminhao++;
+				}
+				if (quantidadeExecucoes > quantidade) {
+					break;
+				}
+				ordemCaminhao = 1;
+				quantidadeExecucoes++;
+				System.out.println();
+			}
 		}
 	}
 
@@ -230,4 +316,5 @@ public class Main {
 		}
 		return todasAsRotas;
 	}
+	// #endregion
 }
