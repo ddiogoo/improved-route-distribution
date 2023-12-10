@@ -8,17 +8,18 @@ import java.util.List;
 import Classes.Caminhao;
 
 public class AlgoritmoGuloso {
+
 	private int[] quilometragens;
 	private List<Caminhao> caminhoes;
-	
+
 	public AlgoritmoGuloso(int[] quilometragens, int numeroDeCaminhoes) {
 		this.quilometragens = quilometragens;
 		this.caminhoes = new ArrayList<Caminhao>();
 		this.carregarCaminhoes(numeroDeCaminhoes);
 	}
-	
+
 	private void carregarCaminhoes(int numeroDeCaminhoes) {
-		for(int i = 0; i < numeroDeCaminhoes; i++) {
+		for (int i = 0; i < numeroDeCaminhoes; i++) {
 			this.caminhoes.add(new Caminhao());
 		}
 	}
@@ -28,26 +29,26 @@ public class AlgoritmoGuloso {
 		this.caminhoes = new ArrayList<Caminhao>();
 		carregarCaminhoes(quantidadeDeCaminhoes);
 	}
-	
+
 	public void distribuirRotasOrdenando() {
 		Arrays.sort(this.quilometragens);
 		int caminhaoAtual = 0;
-		
-		for(int i = 0; i < this.quilometragens.length; i++) {
-			if(caminhaoAtual > this.caminhoes.size() - 1) {
+
+		for (int i = 0; i < this.quilometragens.length; i++) {
+			if (caminhaoAtual > this.caminhoes.size() - 1) {
 				caminhaoAtual = 0;
 			}
 			this.caminhoes.get(caminhaoAtual++).add(this.quilometragens[i]);
 		}
 	}
-	
+
 	public void distribuirRotasParaCaminhaoComMenosRotas(Comparator<Caminhao> comparador) {
-		for(int i = 0; i < this.quilometragens.length; i++) {
+		for (int i = 0; i < this.quilometragens.length; i++) {
 			Caminhao caminhaoComMenosRotas = this.caminhoes.stream().min(comparador).get();
 			caminhaoComMenosRotas.add(this.quilometragens[i]);
 		}
 	}
-	
+
 	public List<Caminhao> obterCaminhoes() {
 		return this.caminhoes;
 	}
