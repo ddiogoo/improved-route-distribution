@@ -149,7 +149,8 @@ public class EntryPointAlgoritmoGuloso {
 
                 System.out.println();
 
-                System.out.print("Quantos conjuntos de resultados deseja mostrar? ");
+                System.out.print("Quantos conjuntos de resultados deseja mostrar (tamanho máximo: "
+                        + filaDeCaminhoes.size() + ")? ");
                 int quantidade = sc.nextInt();
                 limparBuffer();
 
@@ -233,9 +234,8 @@ public class EntryPointAlgoritmoGuloso {
                     return 0;
             }
         };
-        int T = 6;
-        int dezVezesT = 6 * 10;
-        int primeiroValorDeT = T;
+        int T = 27;
+        int dezVezesT = T * 10;
         while (true) {
             List<int[]> conjuntos = GeradorDeProblemas.geracaoDeRotas(10, T, 0.5);
             int[] todasAsRotas = gerarArrayUnidimensionalDeRotas(conjuntos);
@@ -258,7 +258,7 @@ public class EntryPointAlgoritmoGuloso {
                 algoritmoGuloso.reiniciarDadosDosCaminhoes();
             }
             hashMapSegundoGuloso.put(T, execucoesDaSegundaEstrategia);
-            T += primeiroValorDeT;
+            T += 27;
         }
         temposTotais[1] = tempoTotalSegundaEstrategia;
     }

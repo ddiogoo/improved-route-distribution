@@ -29,9 +29,7 @@ public class Caminhao {
 	 * a um determinado caminhão.
 	 */
 	private void calcularTotal() {
-		for (Integer rota : this.rotas) {
-			this.totalDeRotas += rota;
-		}
+		this.totalDeRotas = this.rotas.stream().mapToInt(Integer::intValue).sum();
 	}
 
 	/**
