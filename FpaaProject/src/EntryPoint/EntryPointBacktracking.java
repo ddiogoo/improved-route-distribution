@@ -1,51 +1,30 @@
 package EntryPoint;
 
-import java.util.List;
+import java.util.Scanner;
 
+import Algoritmos.BacktrackingCaram;
 import Algoritmos.Backtracking;
-import Geradores.GeradorDeProblemas;
 
 public class EntryPointBacktracking {
-    // Número fixo de caminhões
-    static final int NUM_CAMINHOES = 3;
-
-    // Melhor diferença atual entre os caminhões
-    static int melhorDiferencaAtualCaminhao = Integer.MAX_VALUE;
+    private static Scanner sc = new Scanner(System.in);
 
     public static void executarBacktracking() {
-        int quantRotas = 6;
-        int tamConjunto = 10;
-        double dispersao = 0.50;
+        System.out.println(
+                "Qual parte do trabalho você deseja executar?");
+        System.out.println("1) Etapas descritas na especificação do trabalho.");
+        System.out.println("2) Conjuntos de teste enviado por email.");
+        System.out.print("Digite o número referente a opção: ");
+        int opcao = sc.nextInt();
 
-        while (true) {
-            long totalTempo = 0;
-
-            // Geração de rotas aleatórias
-            List<int[]> rotas = GeradorDeProblemas.geracaoDeRotas(quantRotas, tamConjunto, dispersao);
-
-            for (int i = 0; i < tamConjunto; i++) {
-                long inicio = System.currentTimeMillis();
-                System.out.println("\n\nConjunto " + i + ": ");
-                Backtracking.imprimirRotas(rotas.get(i));
-
-                // Distribuição e cálculo da melhor diferença atual
-                int melhorDiferencaAtual = Backtracking.distribuirRotas(rotas.get(i));
-                totalTempo += (System.currentTimeMillis() - inicio);
-
-                System.out.println("Melhor diferença atual: " + melhorDiferencaAtual);
-
-                if (totalTempo >= 30000)
-                    break;
-            }
-
-            System.out.println(
-                    "Tamanho " + quantRotas + " foi resolvido em média em " + (totalTempo / tamConjunto) + " ms");
-            if (totalTempo >= 30000) {
-                System.out.println("Tamanho " + quantRotas + " não pôde ser resolvido em até 30 segundos.");
+        switch (opcao) {
+            case 1:
+                Backtracking.executarBacktracking();
                 break;
-            }
-
-            quantRotas++;
+            case 2:
+                BacktrackingCaram.executarBacktracking();
+                break;
+            default:
+                throw new RuntimeException("Opção não encontrada.");
         }
     }
 }

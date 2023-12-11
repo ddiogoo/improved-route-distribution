@@ -4,62 +4,57 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import Geradores.GeradorDeProblemas;
-
 /**
  * Classe principal que resolve o problema de distribuição de rotas entre
  * caminhões.
  */
-public class Backtracking {
+public class BacktrackingCaram {
 
     /**
      * Número fixo de caminhões.
      */
-    static final int NUM_CAMINHOES = 3;
+    private static final int NUM_CAMINHOES = 3;
 
     /**
      * Melhor diferença atual entre os caminhões.
      */
-    static int melhorDiferencaAtualCaminhao = Integer.MAX_VALUE;
+    private static int melhorDiferencaAtualCaminhao = Integer.MAX_VALUE;
 
     /**
-     * Código que executa o algoritmo Backtracking.
+     * Método principal que controla a execução do programa.
      */
     public static void executarBacktracking() {
         int quantRotas = 6;
-        int tamConjunto = 10;
-        double dispersao = 0.50;
+        long totalTempo = 0;
 
-        while (true) {
-            long totalTempo = 0;
+        List<int[]> rotas = new ArrayList<>();
 
-            // Geração de rotas aleatórias
-            List<int[]> rotas = GeradorDeProblemas.geracaoDeRotas(quantRotas, tamConjunto, dispersao);
+        int[] conjuntoRotas1 = { 40, 36, 38, 29, 32, 28, 31, 35, 31, 30, 32, 30, 29, 39, 35, 38, 39, 35, 32, 38, 32, 33,
+                29, 33, 29, 39, 28 };
+        rotas.add(conjuntoRotas1);
 
-            for (int i = 0; i < tamConjunto; i++) {
-                long inicio = System.currentTimeMillis();
-                System.out.println("\n\nConjunto " + i + ": ");
-                imprimirRotas(rotas.get(i));
+        int[] conjuntoRotas2 = { 32, 51, 32, 43, 42, 30, 42, 51, 43, 51, 29, 25, 27, 32, 29, 55, 43, 29, 32, 44, 55, 29,
+                53, 30, 24, 27 };
+        rotas.add(conjuntoRotas2);
 
-                // Distribuição e cálculo da melhor diferença atual
-                int melhorDiferencaAtual = distribuirRotas(rotas.get(i));
-                totalTempo += (System.currentTimeMillis() - inicio);
+        for (int i = 0; i < rotas.size(); i++) {
+            long inicio = System.currentTimeMillis();
+            // System.out.println("\n\nConjunto " + i + ": ");
+            imprimirRotas(rotas.get(i));
 
-                System.out.println("Melhor diferença atual: " + melhorDiferencaAtual);
+            // Distribuição e cálculo da melhor diferença atual
+            int melhorDiferencaAtual = distribuirRotas(rotas.get(i));
+            totalTempo += (System.currentTimeMillis() - inicio);
 
-                if (totalTempo >= 30000)
-                    break;
-            }
-
+            System.out.println("Melhor diferença: " + melhorDiferencaAtual);
             System.out.println(
-                    "Tamanho " + quantRotas + " foi resolvido em média em " + (totalTempo / tamConjunto) + " ms");
-            if (totalTempo >= 30000) {
-                System.out.println("Tamanho " + quantRotas + " não pôde ser resolvido em até 30 segundos.");
-                break;
-            }
-
-            quantRotas++;
+                    "Tamanho " + quantRotas + " foi resolvido em média em " + (totalTempo) + " ms");
         }
+        if (totalTempo >= 30000) {
+            System.out.println("Tamanho " + quantRotas + " não pôde ser resolvido em até 30 segundos.");
+        }
+
+        quantRotas++;
     }
 
     /**
@@ -67,7 +62,7 @@ public class Backtracking {
      * 
      * @param rotas Vetor de rotas a ser impresso.
      */
-    public static void imprimirRotas(int[] rotas) {
+    private static void imprimirRotas(int[] rotas) {
         System.out.print("\nRotas: ");
         for (int i = 0; i < rotas.length; i++) {
             System.out.print(rotas[i] + " ");
@@ -80,7 +75,7 @@ public class Backtracking {
      * 
      * @param caminhoes Lista de caminhões e suas rotas.
      */
-    public static void imprimirDistribuicao(ArrayList<Integer>[] caminhoes) {
+    private static void imprimirDistribuicao(ArrayList<Integer>[] caminhoes) {
         for (int i = 0; i < caminhoes.length; i++) {
             System.out.print("Caminhão " + (i + 1) + ": rotas ");
             int totalDistancia = 0;
@@ -88,6 +83,7 @@ public class Backtracking {
                 System.out.print(j + ", ");
                 totalDistancia += j;
             }
+            // Remova a última vírgula e imprima a distância total
             System.out.println("\b\b" + " - total " + totalDistancia + "km");
         }
     }
@@ -98,7 +94,7 @@ public class Backtracking {
      * @param rotas Vetor de rotas a serem distribuídas.
      * @return A diferença total entre as rotas dos caminhões.
      */
-    public static int distribuirRotas(int[] rotas) {
+    private static int distribuirRotas(int[] rotas) {
         ArrayList<Integer>[] caminhoes = new ArrayList[NUM_CAMINHOES];
 
         // Inicializa os caminhões
@@ -107,6 +103,7 @@ public class Backtracking {
         }
 
         int media = calcularMedia(rotas);
+        // int maxTotalRotasPorCaminhao = (int) Math.ceil((double) media * 1);
 
         // Distribui as rotas entre os caminhões
         for (int i = 0; i < caminhoes.length; i++) {
@@ -134,7 +131,7 @@ public class Backtracking {
      * @param rotas Vetor de rotas a serem calculadas.
      * @return A média das rotas.
      */
-    public static int calcularMedia(int[] rotas) {
+    private static int calcularMedia(int[] rotas) {
         int media = 0;
         for (int i : rotas) {
             media += i;
@@ -148,7 +145,7 @@ public class Backtracking {
      * @param caminhoes Lista de caminhões.
      * @return O caminhão com a menor quilometragem.
      */
-    public static ArrayList<Integer> verificaMenorQuilometragemCaminhao(ArrayList<Integer>[] caminhoes) {
+    private static ArrayList<Integer> verificaMenorQuilometragemCaminhao(ArrayList<Integer>[] caminhoes) {
         int menorQuilometragem = Integer.MAX_VALUE;
         ArrayList<Integer> menorCaminhao = new ArrayList<>();
 
@@ -174,7 +171,7 @@ public class Backtracking {
      *                                 atual.
      * @return A lista de rotas do caminhão com a melhor distribuição.
      */
-    public static ArrayList<Integer> distribuir(int[] rotas, int maxTotalRotasPorCaminhao,
+    private static ArrayList<Integer> distribuir(int[] rotas, int maxTotalRotasPorCaminhao,
             ArrayList<Integer> caminhao, int indice, ArrayList<Integer> melhorRota) {
 
         int somaTotalCaminhao = caminhao.stream().mapToInt(Integer::intValue).sum();
@@ -210,7 +207,7 @@ public class Backtracking {
      * @param caminhoes Lista de caminhões.
      * @return A diferença total entre as rotas dos caminhões.
      */
-    public static int calcularDiferenca(ArrayList<Integer>[] caminhoes) {
+    private static int calcularDiferenca(ArrayList<Integer>[] caminhoes) {
         int max = Integer.MIN_VALUE;
         int min = Integer.MAX_VALUE;
 
@@ -234,7 +231,7 @@ public class Backtracking {
      * @param caminhao Caminhão com as rotas distribuídas.
      * @return O vetor de rotas atualizado.
      */
-    public static int[] atualizarRotas(int[] rotas, ArrayList<Integer> caminhao) {
+    private static int[] atualizarRotas(int[] rotas, ArrayList<Integer> caminhao) {
         LinkedList<Integer> rotasList = new LinkedList<>();
         for (int i : rotas) {
             rotasList.add(i);

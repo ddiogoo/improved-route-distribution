@@ -155,37 +155,20 @@ public class EntryPointAlgoritmoGuloso {
                 System.out.println("Tempo Total da segunda estratégia gulosa: " + temposTotais[1] + " ms");
 
                 System.out.println();
-
-                System.out.print("Quantos conjuntos de resultados deseja mostrar (tamanho máximo: "
-                        + filaDeCaminhoes.size() + ")? ");
-                int quantidade = sc.nextInt();
-                limparBuffer();
-
-                System.out.print(
-                        "Deseja mostrar valores repetidos [S / N]? (Existem 10 valores repetidos para cada tamanho T devido a especificação do trabalho.): ");
-                String mostrarValoresRepetidos = sc.nextLine();
-                limparBuffer();
-
                 System.out.print(
                         "Deseja mostrar somente o total de rotas [S / N]? (Não será mostrado cada rota atribuída): ");
                 String mostrarSomenteTotal = sc.nextLine();
                 limparBuffer();
 
-                if (quantidade > filaDeCaminhoes.size()) {
-                    quantidade = filaDeCaminhoes.size();
-                }
-                boolean mostrarRepetidos = mostrarValoresRepetidos.equals("N") ? true : false;
                 boolean mostrarSomenteTotalDeRotas = mostrarSomenteTotal.equals("S") ? true : false;
 
                 limparTela();
-                mostrarDadosDoCaminhao(quantidade, mostrarRepetidos, mostrarSomenteTotalDeRotas);
-
+                mostrarDadosDoCaminhao(mostrarSomenteTotalDeRotas);
                 sc.close();
                 break;
             case 2:
                 executarComBaseNoPrimeiroConjuntoDeTestes();
                 executarComBaseNoSegundoConjuntoDeTestes();
-
                 mostrarDadosDoCaminhaoObtidosNoPrimeiroConjuntoDeTeste();
                 mostrarDadosDoCaminhaoObtidosNoSegundoConjuntoDeTeste();
                 break;
@@ -203,6 +186,7 @@ public class EntryPointAlgoritmoGuloso {
     private static void primeiraEstrategiaGulosa() {
         int T = 27;
         int dezVezesT = T * 10;
+        boolean adicionouNaFila = false;
         while (true) {
             List<int[]> conjuntos = GeradorDeProblemas.geracaoDeRotas(T, 10, 0.5);
             int[] todasAsRotas = gerarArrayUnidimensionalDeRotas(conjuntos);
@@ -221,9 +205,13 @@ public class EntryPointAlgoritmoGuloso {
                 tempoTotalPrimeiraEstrategia += tempoTotalPorT;
                 execucoesDaPrimeiraEstrategia.add(tempoTotalPorT);
 
-                filaDeCaminhoes.add(algoritmoGuloso.obterCaminhoes());
+                if (!adicionouNaFila) {
+                    filaDeCaminhoes.add(algoritmoGuloso.obterCaminhoes());
+                    adicionouNaFila = true;
+                }
                 algoritmoGuloso.reiniciarDadosDosCaminhoes();
             }
+            adicionouNaFila = false;
             hashMapPrimeiroGuloso.put(T, execucoesDaPrimeiraEstrategia);
             T += 27;
         }
@@ -246,6 +234,7 @@ public class EntryPointAlgoritmoGuloso {
         };
         int T = 27;
         int dezVezesT = T * 10;
+        boolean adicionouNaFila = false;
         while (true) {
             List<int[]> conjuntos = GeradorDeProblemas.geracaoDeRotas(T, 10, 0.5);
             int[] todasAsRotas = gerarArrayUnidimensionalDeRotas(conjuntos);
@@ -264,9 +253,13 @@ public class EntryPointAlgoritmoGuloso {
                 tempoTotalSegundaEstrategia += tempoTotalPorT;
                 execucoesDaSegundaEstrategia.add(tempoTotalPorT);
 
-                filaDeCaminhoes.add(algoritmoGuloso.obterCaminhoes());
+                if (!adicionouNaFila) {
+                    filaDeCaminhoes.add(algoritmoGuloso.obterCaminhoes());
+                    adicionouNaFila = true;
+                }
                 algoritmoGuloso.reiniciarDadosDosCaminhoes();
             }
+            adicionouNaFila = false;
             hashMapSegundoGuloso.put(T, execucoesDaSegundaEstrategia);
             T += 27;
         }
@@ -362,72 +355,29 @@ public class EntryPointAlgoritmoGuloso {
     /**
      * Mostrar os dados dos 3 caminhões.
      * 
-     * @param quantidade           Quantidade de conjuntos de 3 caminhões que serão
-     *                             mostrados.
-     * @param naoMostrarRepetidos  Para 1 conjunto dentro da fila de caminhões, há
-     *                             10
-     *                             resultados com o mesmo valor, pois estamos
-     *                             executando 10 vezes com o mesmo conjunto de
-     *                             rotas,
-     *                             esse parâmetro permite que você mostre somente o
-     *                             primeiro resultado de cada conjunto para não
-     *                             confundir.
      * @param mostrarSomenteOTotal Não mostra cada rota atribuída ao caminhão,
      *                             somente o total de rotas.
      */
-    private static void mostrarDadosDoCaminhao(int quantidade, boolean naoMostrarRepetidos,
-            boolean mostrarSomenteOTotal) {
+    private static void mostrarDadosDoCaminhao(boolean mostrarSomenteOTotal) {
         int ordemCaminhao = 1;
-        int quantidadeExecucoes = 0;
-        if (naoMostrarRepetidos) {
-            for (int i = 0; i < filaDeCaminhoes.size(); i += 10) {
-                if (quantidadeExecucoes == quantidade) {
-                    break;
-                }
-                List<Caminhao> caminhoes = filaDeCaminhoes.get(i);
-                for (Caminhao caminhao : caminhoes) {
-                    if (!mostrarSomenteOTotal) {
-                        if (caminhoes == null)
-                            continue;
-                        System.out.print("Rotas do " + ordemCaminhao + "º caminhão: ");
+        for (List<Caminhao> caminhoes : filaDeCaminhoes) {
+            for (Caminhao caminhao : caminhoes) {
+                if (caminhoes == null)
+                    continue;
+                System.out.print("Rotas do " + ordemCaminhao + "º caminhão: ");
 
-                        for (int rota : caminhao.getRotas()) {
-                            System.out.print(rota + "km; ");
-                        }
-                        System.out.println();
-
-                        System.out.println("Total de rotas: " + caminhao.totalDeRotas() + " km");
-                    } else {
-                        System.out.println("Total de rotas: " + caminhao.totalDeRotas() + " km");
-                    }
-                    ordemCaminhao++;
-                }
-                ordemCaminhao = 1;
-                quantidadeExecucoes++;
-                System.out.println();
-            }
-        } else {
-            for (List<Caminhao> caminhoes : filaDeCaminhoes) {
-                for (Caminhao caminhao : caminhoes) {
-                    if (caminhoes == null)
-                        continue;
-                    System.out.print("Rotas do " + ordemCaminhao + "º caminhão: ");
-
+                if (!mostrarSomenteOTotal) {
                     for (int rota : caminhao.getRotas()) {
                         System.out.print(rota + "km; ");
                     }
-                    System.out.println();
-
-                    System.out.println("Total de rotas: " + caminhao.totalDeRotas() + " km");
-                    ordemCaminhao++;
                 }
-                if (quantidadeExecucoes > quantidade) {
-                    break;
-                }
-                ordemCaminhao = 1;
-                quantidadeExecucoes++;
                 System.out.println();
+
+                System.out.println("Total de rotas: " + caminhao.totalDeRotas() + " km");
+                ordemCaminhao++;
             }
+            ordemCaminhao = 1;
+            System.out.println();
         }
     }
 
