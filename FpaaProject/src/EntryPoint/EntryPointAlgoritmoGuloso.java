@@ -104,20 +104,6 @@ public class EntryPointAlgoritmoGuloso {
     }
 
     /**
-     * Limpa o buffer do teclado.
-     * 
-     * @param sc Scanner usado para ler valores do teclado.
-     */
-    private static void limparBuffer() {
-        while (sc.hasNextLine()) {
-            String line = sc.nextLine();
-            if (line.isEmpty()) {
-                break;
-            }
-        }
-    }
-
-    /**
      * Executar o algoritmo guloso usando as duas estratégias.
      */
     public static void executarAlgoritmoGuloso() {
@@ -154,16 +140,8 @@ public class EntryPointAlgoritmoGuloso {
                 System.out.println("Tempo Total da primeira estratégia gulosa: " + temposTotais[0] + " ms");
                 System.out.println("Tempo Total da segunda estratégia gulosa: " + temposTotais[1] + " ms");
 
-                System.out.println();
-                System.out.print(
-                        "Deseja mostrar somente o total de rotas [S / N]? (Não será mostrado cada rota atribuída): ");
-                String mostrarSomenteTotal = sc.nextLine();
-                limparBuffer();
-
-                boolean mostrarSomenteTotalDeRotas = mostrarSomenteTotal.equals("S") ? true : false;
-
                 limparTela();
-                mostrarDadosDoCaminhao(mostrarSomenteTotalDeRotas);
+                mostrarDadosDoCaminhao();
                 sc.close();
                 break;
             case 2:
@@ -354,30 +332,10 @@ public class EntryPointAlgoritmoGuloso {
 
     /**
      * Mostrar os dados dos 3 caminhões.
-     * 
-     * @param mostrarSomenteOTotal Não mostra cada rota atribuída ao caminhão,
-     *                             somente o total de rotas.
      */
-    private static void mostrarDadosDoCaminhao(boolean mostrarSomenteOTotal) {
-        int ordemCaminhao = 1;
+    private static void mostrarDadosDoCaminhao() {
         for (List<Caminhao> caminhoes : filaDeCaminhoes) {
-            for (Caminhao caminhao : caminhoes) {
-                if (caminhoes == null)
-                    continue;
-                System.out.print("Rotas do " + ordemCaminhao + "º caminhão: ");
-
-                if (!mostrarSomenteOTotal) {
-                    for (int rota : caminhao.getRotas()) {
-                        System.out.print(rota + "km; ");
-                    }
-                }
-                System.out.println();
-
-                System.out.println("Total de rotas: " + caminhao.totalDeRotas() + " km");
-                ordemCaminhao++;
-            }
-            ordemCaminhao = 1;
-            System.out.println();
+            imprimirDistribuicao(caminhoes);
         }
     }
 
