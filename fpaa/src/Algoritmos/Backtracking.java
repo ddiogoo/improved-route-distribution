@@ -66,7 +66,7 @@ public class Backtracking {
      * @param rotas Vetor de rotas a ser impresso.
      */
     public static void imprimirRotas(int[] rotas) {
-        System.out.println("Rotas: ");
+        System.out.print("\nRotas: ");
         for (int i = 0; i < rotas.length; i++) {
             System.out.print(rotas[i] + " ");
         }
@@ -80,11 +80,13 @@ public class Backtracking {
      */
     public static void imprimirDistribuicao(ArrayList<Integer>[] caminhoes) {
         for (int i = 0; i < caminhoes.length; i++) {
-            System.out.print("Caminhão " + i + ": ");
+            System.out.print("Caminhão " + (i + 1) + ": rotas ");
+            int totalDistancia = 0;
             for (int j : caminhoes[i]) {
-                System.out.print(j + " ");
+                System.out.print(j + ", ");
+                totalDistancia += j;
             }
-            System.out.println();
+            System.out.println("\b\b" + " - total " + totalDistancia + "km");
         }
     }
 
@@ -103,11 +105,11 @@ public class Backtracking {
         }
 
         int media = calcularMedia(rotas);
-        int maxTotalRotasPorCaminhao = (int) Math.ceil((double) media * 1.02);
+        // int maxTotalRotasPorCaminhao = (int) Math.ceil((double) media * 1.02);
 
         // Distribui as rotas entre os caminhões
         for (int i = 0; i < caminhoes.length; i++) {
-            caminhoes[i] = distribuir(rotas, maxTotalRotasPorCaminhao, caminhoes[i], 0, new ArrayList<>());
+            caminhoes[i] = distribuir(rotas, media, caminhoes[i], 0, new ArrayList<>());
             melhorDiferencaAtualCaminhao = Integer.MAX_VALUE;
             rotas = atualizarRotas(rotas, caminhoes[i]);
         }
