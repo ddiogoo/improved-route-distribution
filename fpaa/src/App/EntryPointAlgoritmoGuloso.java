@@ -92,6 +92,9 @@ public class EntryPointAlgoritmoGuloso {
     private static int[] segundoConjuntoDeTeste = { 32, 51, 32, 43, 42, 30, 42, 51, 43, 51, 29, 25, 27, 32, 29, 55, 43,
             29, 32, 44, 55, 29, 53, 30, 24, 27 };
 
+    private static List<List<Caminhao>> caminhoesDoPrimeiroConjuntoDeTeste = new ArrayList<>();
+    private static List<List<Caminhao>> caminhoesDoSegundoConjuntoDeTeste = new ArrayList<>();
+
     /**
      * "Limpa" a tela (códigos de terminal VT-100).s
      */
@@ -131,17 +134,21 @@ public class EntryPointAlgoritmoGuloso {
                 primeiraEstrategiaGulosa();
                 segundaEstrategiaGulosa();
 
+                System.out.println("DADOS OBTIDOS AO EXECUTAR A PRIMEIRA ESTRATÉGIA (ORDENANDO O ARRAY DE ROTAS)...");
                 hashMapPrimeiroGuloso.entrySet().stream()
                         .sorted(Map.Entry.comparingByKey())
                         .forEach(entry -> System.out.println("Quantidade de Rotas: " + entry.getKey()
-                                + ", Tempo (em ms) por execução: " + entry.getValue()));
+                                + ", Tempo (em ms) por execução: " + entry.getValue() + " Média (em ms): "
+                                + ((double) (entry.getValue().stream().mapToLong(Long::valueOf).sum()) / 10)));
 
                 System.out.println();
-
+                System.out.println(
+                        "DADOS OBTIDOS AO EXECUTAR A SEGUNDA ESTRATÉGIA (PROCURANDO O CAMINHÃO COM MENOR TOTAL DE ROTAS)...");
                 hashMapSegundoGuloso.entrySet().stream()
                         .sorted(Map.Entry.comparingByKey())
                         .forEach(entry -> System.out.println("Quantidade de Rotas: " + entry.getKey()
-                                + ", Tempo (em ms) por execução: " + entry.getValue()));
+                                + ", Tempo (em ms) por execução: " + entry.getValue() + " Média (em ms): "
+                                + ((double) (entry.getValue().stream().mapToLong(Long::valueOf).sum()) / 10)));
 
                 System.out.println();
                 System.out.println("Tempo Total da primeira estratégia gulosa: " + temposTotais[0] + " ms");
@@ -178,6 +185,9 @@ public class EntryPointAlgoritmoGuloso {
             case 2:
                 executarComBaseNoPrimeiroConjuntoDeTestes();
                 executarComBaseNoSegundoConjuntoDeTestes();
+
+                mostrarDadosDoCaminhaoObtidosNoPrimeiroConjuntoDeTeste();
+                mostrarDadosDoCaminhaoObtidosNoSegundoConjuntoDeTeste();
                 break;
             default:
                 System.out.println("Opção não encontrada.");
@@ -237,7 +247,7 @@ public class EntryPointAlgoritmoGuloso {
         int T = 27;
         int dezVezesT = T * 10;
         while (true) {
-            List<int[]> conjuntos = GeradorDeProblemas.geracaoDeRotas(10, T, 0.5);
+            List<int[]> conjuntos = GeradorDeProblemas.geracaoDeRotas(T, 10, 0.5);
             int[] todasAsRotas = gerarArrayUnidimensionalDeRotas(conjuntos);
 
             if (T > dezVezesT)
@@ -270,12 +280,15 @@ public class EntryPointAlgoritmoGuloso {
     private static void executarComBaseNoPrimeiroConjuntoDeTestes() {
         long tempoTotal, tempoInicial, tempoFinal;
 
-        System.out.println("Executando Algoritmo Guloso com base no primeiro conjunto de teste...");
+        System.out.println("EXECUTANDO ALGORITMO GULOSO COM BASE NO PRIMEIRO CONJUNTO DE TESTE...");
+        System.out.println();
         AlgoritmoGuloso algoritmoGuloso = new AlgoritmoGuloso(primeiroConjuntoDeRotas, 3);
         tempoInicial = System.nanoTime();
         algoritmoGuloso.distribuirRotasOrdenando();
-        algoritmoGuloso.reiniciarDadosDosCaminhoes();
         tempoFinal = System.nanoTime();
+
+        caminhoesDoPrimeiroConjuntoDeTeste.add(algoritmoGuloso.obterCaminhoes());
+        algoritmoGuloso.reiniciarDadosDosCaminhoes();
 
         tempoTotal = (tempoFinal - tempoInicial);
         System.out.println("Tempo da execução da primeira estratégia (ordenando): " + tempoTotal + " nano segundos.");
@@ -292,8 +305,10 @@ public class EntryPointAlgoritmoGuloso {
 
         tempoInicial = System.nanoTime();
         algoritmoGuloso.distribuirRotasParaCaminhaoComMenosRotas(comparador);
-        algoritmoGuloso.reiniciarDadosDosCaminhoes();
         tempoFinal = System.nanoTime();
+
+        caminhoesDoPrimeiroConjuntoDeTeste.add(algoritmoGuloso.obterCaminhoes());
+        algoritmoGuloso.reiniciarDadosDosCaminhoes();
 
         tempoTotal = (tempoFinal - tempoInicial);
         System.err.println("Tempo da execução da segunda estratégia (caminhão com menor total de rotas): " + tempoTotal
@@ -308,12 +323,15 @@ public class EntryPointAlgoritmoGuloso {
     private static void executarComBaseNoSegundoConjuntoDeTestes() {
         long tempoTotal, tempoInicial, tempoFinal;
 
-        System.out.println("Executando Algoritmo Guloso com base no segundo conjunto de teste...");
+        System.out.println("EXECUTANDO ALGORITMO GULOSO COM BASE NO SEGUNDO CONJUNTO DE TESTE...");
+        System.out.println();
         AlgoritmoGuloso algoritmoGuloso = new AlgoritmoGuloso(segundoConjuntoDeTeste, 3);
         tempoInicial = System.nanoTime();
         algoritmoGuloso.distribuirRotasOrdenando();
-        algoritmoGuloso.reiniciarDadosDosCaminhoes();
         tempoFinal = System.nanoTime();
+
+        caminhoesDoSegundoConjuntoDeTeste.add(algoritmoGuloso.obterCaminhoes());
+        algoritmoGuloso.reiniciarDadosDosCaminhoes();
 
         tempoTotal = (tempoFinal - tempoInicial);
         System.out.println("Tempo da execução da primeira estratégia (ordenando): " + tempoTotal + " nano segundos.");
@@ -330,12 +348,15 @@ public class EntryPointAlgoritmoGuloso {
 
         tempoInicial = System.nanoTime();
         algoritmoGuloso.distribuirRotasParaCaminhaoComMenosRotas(comparador);
-        algoritmoGuloso.reiniciarDadosDosCaminhoes();
         tempoFinal = System.nanoTime();
+
+        caminhoesDoSegundoConjuntoDeTeste.add(algoritmoGuloso.obterCaminhoes());
+        algoritmoGuloso.reiniciarDadosDosCaminhoes();
 
         tempoTotal = (tempoFinal - tempoInicial);
         System.err.println("Tempo da execução da segunda estratégia (caminhão com menor total de rotas): " + tempoTotal
                 + " nano segundos.");
+        System.out.println();
     }
 
     /**
@@ -411,6 +432,28 @@ public class EntryPointAlgoritmoGuloso {
     }
 
     /**
+     * Mostra os dados de uma lista de caminhões.
+     * 
+     * @param caminhoes Lista de caminhões.
+     */
+    private static void mostrarDadosDoCaminhaoObtidosNoPrimeiroConjuntoDeTeste() {
+        for (List<Caminhao> caminhoes : caminhoesDoPrimeiroConjuntoDeTeste) {
+            imprimirDistribuicao(caminhoes);
+        }
+    }
+
+    /**
+     * Mostra os dados de uma lista de caminhões.
+     * 
+     * @param caminhoes Lista de caminhões.
+     */
+    private static void mostrarDadosDoCaminhaoObtidosNoSegundoConjuntoDeTeste() {
+        for (List<Caminhao> caminhoes : caminhoesDoSegundoConjuntoDeTeste) {
+            imprimirDistribuicao(caminhoes);
+        }
+    }
+
+    /**
      * Gerar um array unidimensional de rotas, com base em uma Lista de arrays
      * unidimensionais.
      * 
@@ -426,5 +469,47 @@ public class EntryPointAlgoritmoGuloso {
             }
         }
         return todasAsRotas;
+    }
+
+    /**
+     * Imprime a distribuição de rotas.
+     * 
+     * @param caminhoes Caminhões que te
+     */
+    public static void imprimirDistribuicao(List<Caminhao> caminhoes) {
+        for (int i = 0; i < caminhoes.size(); i++) {
+            System.out.print("Caminhão " + (i + 1) + ": rotas ");
+            int totalDistancia = 0;
+            for (int j : caminhoes.get(i).getRotas()) {
+                System.out.print(j + ", ");
+                totalDistancia += j;
+            }
+            System.out.println("\b\b" + " - total " + totalDistancia + "km");
+        }
+        System.out.println("Melhor diferença: " + calcularDiferenca(caminhoes));
+        System.out.println();
+    }
+
+    /**
+     * Calcula a melhor diferença entre rotas.
+     * 
+     * @param caminhoes Lista de caminhões.
+     * @return Valor inteiro que representa a diferença.
+     */
+    public static int calcularDiferenca(List<Caminhao> caminhoes) {
+        int max = Integer.MIN_VALUE;
+        int min = Integer.MAX_VALUE;
+
+        for (Caminhao caminhao : caminhoes) {
+            int somaTotalCaminhao = caminhao.totalDeRotas();
+            if (somaTotalCaminhao > max) {
+                max = somaTotalCaminhao;
+            }
+            if (somaTotalCaminhao < min) {
+                min = somaTotalCaminhao;
+            }
+        }
+
+        return max - min;
     }
 }
